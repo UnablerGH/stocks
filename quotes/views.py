@@ -5,6 +5,7 @@ from .models import Stock
 from django.contrib import messages
 from .forms import StockForm
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 def home(request):
     if request.method == 'POST':
@@ -69,3 +70,22 @@ def delete(request, stock_id):
 def delete_stock(request):
     ticker = Stock.objects.all()
     return render(request, 'delete_stock.html', {'ticker': ticker})
+
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        message = request.POST['message']
+
+        # Send email
+        send_mail(
+            f'Message from {name} via Contact Form',
+            message,
+            email,
+            ['your_email@example.com'],
+        )
+
+        messages.success(request, 'Your message has been sent!')
+        return render(request, 'contact.html')
+
+    return render(request, 'contact.html')
