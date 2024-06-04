@@ -29,30 +29,34 @@ def home(request):
 def about(request):
     return render(request, 'about.html', {})
 
+
 def add_stock(request):
     if request.method == 'POST':
-        form = StockForm(request.POST or None)
-
+        form = StockForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, ("Stock has been added"))
+            ticker = form.cleaned_data['ticker']
+            if Stock.objects.filter(ticker=ticker).exists():
+                messages.warning(request, "Stock already exists in your portfolio.")
+            else:
+                form.save()
+                messages.success(request, "Stock has been added")
             return redirect('add_stock')
     else:
         tickers = Stock.objects.all()
         output = []
 
+        api_token = 'pk_586d99bbdc9841178155bffbaf5769eb'
+        base_url = 'https://api.iex.cloud/v1/data/core/quote/'
+
         for ticker in tickers:
-            api_url = f'https://api.iex.cloud/v1/data/core/quote/{str(ticker)}?token=pk_586d99bbdc9841178155bffbaf5769eb'
+            api_url = f'{base_url}{str(ticker)}?token={api_token}'
             try:
                 response = requests.get(api_url)
-                api = json.loads(response.content)[0]
+                response.raise_for_status()  # Raise an HTTPError for bad responses
+                api = response.json()[0]
                 output.append(api)
-                if api:
-                    pass
-                else:
-                    api = "Error..."
-            except Exception as e:
-                api = "Error..."
+            except (requests.exceptions.HTTPError, IndexError, json.JSONDecodeError, KeyError):
+                output.append({"symbol": str(ticker), "error": "Error retrieving data"})
 
         return render(request, 'add_stock.html', {'ticker': tickers, 'output': output})
     

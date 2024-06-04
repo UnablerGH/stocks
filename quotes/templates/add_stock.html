@@ -2,49 +2,56 @@
 
 {% block content %}
 
+<div class="container mt-5">
+    <h1>Add Stock</h1>
+    <br/>
 
-<h1>Add stock...</h1>
-<br/>
+    <form action="{% url 'add_stock' %}" class="d-flex" method="POST">
+        {% csrf_token %}
+        <input class="form-control me-2" type="search" placeholder="Add Ticker To Portfolio" aria-label="Search" name="ticker">
+        <button class="btn btn-outline-success" type="submit">Add Stock</button>
+    </form>
+    <br/>
 
-<form action="{% url 'add_stock' %}" class="d-flex" method="POST">
-    {% csrf_token %}
-  <input class="form-control me-2" type="search" placeholder="Add Ticker To Portfolio" aria-label="Search" name="ticker">
-  <button class="btn btn-outline-success d-flex" type="submit">Add Stock</button>
-</form><br/>
-
-
-<table class="table table-striped table-hover table-bordered caption-top">
-    <caption>Your stocks</caption>
-
-    <thead class="table-dark">
-      <tr>
-        <th scope="col">Company</th>
-        <th scope="col">Price</th>
-        <th scope="col">Previous Close</th>
-        <th scope="col">Market Cap</th>
-        <th scope="col">YTD Change</th>
-        <th scope="col">52WkHigh</th>
-        <th scope="col">52WkLow</th>
-      </tr>
-    </thead>
-
-    <tbody class="table-group-divider">
-    {% if ticker %}
-            {% for list_item in output %}
-            <tr>
-                <th scope="row">{{ list_item.companyName }}</th>
-                <td>${{ list_item.latestPrice }}</td>
-                <td>${{ list_item.previousClose }}</td>
-                <td>${{ list_item.marketCap }}</td>
-                <td>{{ list_item.ytdChange }}%</td>
-                <td>${{ list_item.week52High }}</td>
-                <td>${{ list_item.week52Low }}</td>
-            </tr>
-            {% endfor %}
+    {% if ticker and output %}
+        <table class="table table-striped table-hover table-bordered caption-top">
+            <caption>Your stocks</caption>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Company</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Previous Close</th>
+                    <th scope="col">Market Cap</th>
+                    <th scope="col">YTD Change</th>
+                    <th scope="col">52Wk High</th>
+                    <th scope="col">52Wk Low</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for list_item in output %}
+                    {% if list_item.error %}
+                        <tr>
+                            <td colspan="7">{{ list_item.error }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th scope="row">{{ list_item.companyName }}</th>
+                            <td>${{ list_item.latestPrice }}</td>
+                            <td>${{ list_item.previousClose }}</td>
+                            <td>${{ list_item.marketCap }}</td>
+                            <td>{{ list_item.ytdChange }}%</td>
+                            <td>${{ list_item.week52High }}</td>
+                            <td>${{ list_item.week52Low }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            You don't have any stocks in your portfolio yet.
+        </div>
     {% endif %}
-    </tbody>
-  </table>
-
-
+</div>
 
 {% endblock %}

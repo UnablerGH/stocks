@@ -2,19 +2,27 @@
 
 {% block content %}
 
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="text-center mb-4">Delete Stock</h1>
 
-<h1>Delete Stock</h1>
-<br/>
-<br/>
-
-{% if ticker %}
-
-    {% for item in ticker %}
-       <a href="{% url 'delete' item.id %}" class="btn btn-danger">Delete {{ item }}</a><br>
-    {% endfor %}
-
-{% else %}
-    You don't have any stocks...
-{% endif %}
+            {% if ticker %}
+                <div class="list-group">
+                    {% for item in ticker %}
+                        <a href="{% url 'delete' item.id %}" class="list-group-item list-group-item-action list-group-item-danger d-flex justify-content-between align-items-center">
+                            {{ item }}
+                            <span class="badge badge-danger badge-pill">Delete</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-warning text-center" role="alert">
+                    You don't have any stocks...
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}

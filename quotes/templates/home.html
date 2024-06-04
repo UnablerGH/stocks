@@ -1,27 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{% if ticker %}
-    {{ ticker }}
-{% endif %}
-
-
-{% if api %}
-    {% if api == "Error..." %}
-        There was a problem with your request. 
-        please try again...
-    {% else %}
-        <h1>{{ api.companyName }}</h1><br/>
-        Price: ${{ api.latestPrice }}<br/>
-        Previous Close: ${{ api.previousClose }}<br/>
-        Market Cap: ${{ api.marketCap }}<br/>
-        YTD Change: ${{ api.ytdChange }}<br/>
-        52Wk High: ${{ api.week52High  }}<br/>
-        52WK Low: ${{ api.week52Low  }}<br/>
-
+<div class="container mt-5">
+    {% if ticker %}
+        <div class="alert alert-info" role="alert">
+            {{ ticker }}
+        </div>
     {% endif %}
-{% endif %}
 
-
+    {% if api %}
+        {% if api == "Error..." %}
+            <div class="alert alert-danger" role="alert">
+                There was a problem with your request. Please try again...
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-header">
+                    <h1>{{ api.companyName }}</h1>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Price:</strong> ${{ api.latestPrice }}<br/>
+                        <strong>Previous Close:</strong> ${{ api.previousClose }}<br/>
+                        <strong>Market Cap:</strong> ${{ api.marketCap }}<br/>
+                        <strong>YTD Change:</strong> ${{ api.ytdChange }}<br/>
+                        <strong>52Wk High:</strong> ${{ api.week52High }}<br/>
+                        <strong>52Wk Low:</strong> ${{ api.week52Low }}<br/>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
 {% endblock %}
